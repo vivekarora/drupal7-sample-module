@@ -1,0 +1,6 @@
+name = Site Information
+description = Site information api
+core = 7.x
+package = Sample module
+version = 7.x-1.0
+project = sm_site_information

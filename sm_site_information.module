@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file
+ * Code for the sm_site_information.module
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function sm_site_information_form_system_site_information_settings_alter ( &$form, &$form_state ) {
+  $form['site_information']['siteapikey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Site API Key'),
+    '#description' => t('Site api key for webservice.'),
+    '#default_value' => variable_get('siteapikey', 'No API Key yet'),
+    '#weight' => '0',
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function sm_site_information_menu() {
+  $items['page_json/%/%'] = array(
+    'title' => 'Page Json',
+    'page callback' => 'sm_site_information_page_json',
+    'page arguments' => array(2),
+    'access callback' => sm_site_information_page_json_validate_access,
+    'access arguments' => array(1, 2),
+    'file' => 'sm_site_information.pages.inc',
+    'type' => MENU_CALLBACK,
+  ); 
+  
+  return $items;
+}
+
+/**
+ * Access callback for Page Json webservice
+ * 
+ * @param varchar $siteapikey
+ * @param object $node
+ * 
+ * return boolean
+ */
+function sm_site_information_page_json_validate_access($siteapikey, $nid){
+  $api_key = variable_get('siteapikey', FALSE);
+  $node = FALSE;
+  
+  //Check if nid is numeric
+  if (is_numeric($nid)) {
+    $node = node_load($nid);
+  }
+  
+  // Validate access
+  if ($api_key !== FALSE && $api_key === $siteapikey && $node !== FALSE) {
+    return TRUE;
+  }
+  
+  return FALSE;
+} 
